@@ -45,7 +45,6 @@ App = {
     }
     web3 = new Web3(App.web3Provider);
 
-
     return App.initContract();
   },
 
@@ -68,6 +67,29 @@ App = {
 
   bindEvents: function() {
     $(document).on('click', '.btn-adopt', App.handleAdopt);
+    $('#donateButton').on('click', App.handleDonate);
+  },
+
+  handleDonate: function(event) {
+    event.preventDefault();
+  
+    var donationAmount = prompt("Enter donation amount in ETH:");
+    if (!donationAmount) return;
+  
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+  
+      var account = accounts[0];
+      App.contracts.Adoption.deployed().then(function(instance) {
+        return instance.donate({ from: account, value: web3.utils.toWei(donationAmount, 'ether') });
+      }).then(function(result) {
+        alert("Thank you for your donation!");
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
   },
 
   markAdopted: function() {
@@ -97,27 +119,49 @@ App = {
     var adoptionInstance;
 
     web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
+        if (error) {
+            console.log(error);
+        }
 
+        var account = accounts[0];
+
+        App.contracts.Adoption.deployed().then(function(instance) {
+            adoptionInstance = instance;
+
+            // Send Ether with the transaction
+            return adoptionInstance.adopt(petId, { from: account, value: web3.utils.toWei('0.01', 'ether') });
+        }).then(function(result) {
+            return App.markAdopted();
+        }).catch(function(err) {
+            console.log(err.message);
+        });
+    });
+
+  },
+
+  handleReturn: function(event) {
+    event.preventDefault();
+    var petId = parseInt($(event.target).data('id'));
+    var adoptionInstance;
+  
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) console.log(error);
       var account = accounts[0];
-
       App.contracts.Adoption.deployed().then(function(instance) {
         adoptionInstance = instance;
-
-        // Execute adopt as a transaction by sending account
-        return adoptionInstance.adopt(petId, {from: account});
+        return adoptionInstance.returnPet(petId, { from: account });
       }).then(function(result) {
-        return App.markAdopted();
+        return App.markAdopted(); // Refresh UI
       }).catch(function(err) {
         console.log(err.message);
       });
     });
-
   }
 
 };
+
+
+
 
 $(function() {
   $(window).load(function() {
