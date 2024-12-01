@@ -45,7 +45,6 @@ App = {
     }
     web3 = new Web3(App.web3Provider);
 
-
     return App.initContract();
   },
 
