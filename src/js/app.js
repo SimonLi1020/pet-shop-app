@@ -1,125 +1,203 @@
 App = {
   web3Provider: null,
   contracts: {},
+  likes: {}, // Track likes for each pet
 
-  init: async function() {
-    // Load pets.
-    $.getJSON('../pets.json', function(data) {
-      var petsRow = $('#petsRow');
-      var petTemplate = $('#petTemplate');
+  init: async function () {
+    // Initialize pets and chat area
+    $.getJSON('../pets.json', function (data) {
+      const petsRow = $('#petsRow');
+      const petTemplate = $('#petTemplate');
 
-      for (i = 0; i < data.length; i ++) {
-        petTemplate.find('.panel-title').text(data[i].name);
-        petTemplate.find('img').attr('src', data[i].picture);
-        petTemplate.find('.pet-breed').text(data[i].breed);
-        petTemplate.find('.pet-age').text(data[i].age);
-        petTemplate.find('.pet-location').text(data[i].location);
-        petTemplate.find('.btn-adopt').attr('data-id', data[i].id);
+      data.forEach((pet, i) => {
+        petTemplate.find('.panel-title').text(pet.name);
+        petTemplate.find('img').attr('src', pet.picture);
+        petTemplate.find('.pet-breed').text(pet.breed);
+        petTemplate.find('.pet-age').text(pet.age);
+        petTemplate.find('.pet-location').text(pet.location);
+        petTemplate.find('.btn-adopt').attr('data-id', pet.id);
+        petTemplate.find('.btn-like').attr('data-id', pet.id);
+        petTemplate.find('.like-count').text(App.likes[pet.id] || 0);
 
         petsRow.append(petTemplate.html());
-      }
-    });
-
-    return await App.initWeb3();
-  },
-
-  initWeb3: async function() {
-    // Modern dapp browsers...
-    if (window.ethereum) {
-      App.web3Provider = window.ethereum;
-      try {
-        // Request account access
-        await window.ethereum.enable();
-      } catch (error) {
-        // User denied account access...
-        console.error("User denied account access")
-      }
-    }
-    // Legacy dapp browsers...
-    else if (window.web3) {
-      App.web3Provider = window.web3.currentProvider;
-    }
-    // If no injected web3 instance is detected, fall back to Ganache
-    else {
-      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-    }
-    web3 = new Web3(App.web3Provider);
-
-    return App.initContract();
-  },
-
-  initContract: function() {
-    $.getJSON('Adoption.json', function(data) {
-      // Get the necessary contract artifact file and instantiate it with @truffle/contract
-      var AdoptionArtifact = data;
-      App.contracts.Adoption = TruffleContract(AdoptionArtifact);
-    
-      // Set the provider for our contract
-      App.contracts.Adoption.setProvider(App.web3Provider);
-    
-      // Use our contract to retrieve and mark the adopted pets
-      return App.markAdopted();
-    });
-    
-
-    return App.bindEvents();
-  },
-
-  bindEvents: function() {
-    $(document).on('click', '.btn-adopt', App.handleAdopt);
-  },
-
-  markAdopted: function() {
-    var adoptionInstance;
-
-    App.contracts.Adoption.deployed().then(function(instance) {
-      adoptionInstance = instance;
-
-      return adoptionInstance.getAdopters.call();
-    }).then(function(adopters) {
-      for (i = 0; i < adopters.length; i++) {
-        if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
-          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true);
-        }
-      }
-    }).catch(function(err) {
-      console.log(err.message);
-    });
-
-  },
-
-  handleAdopt: function(event) {
-    event.preventDefault();
-
-    var petId = parseInt($(event.target).data('id'));
-
-    var adoptionInstance;
-
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-
-      var account = accounts[0];
-
-      App.contracts.Adoption.deployed().then(function(instance) {
-        adoptionInstance = instance;
-
-        // Execute adopt as a transaction by sending account
-        return adoptionInstance.adopt(petId, {from: account});
-      }).then(function(result) {
-        return App.markAdopted();
-      }).catch(function(err) {
-        console.log(err.message);
       });
     });
 
-  }
+    await App.initWeb3();
+    return App.initContract();
+  },
 
+  initWeb3: async function () {
+    if (window.ethereum) {
+      App.web3Provider = window.ethereum;
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        console.error('User denied account access');
+      }
+    } else if (window.web3) {
+      App.web3Provider = window.web3.currentProvider;
+    } else {
+      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+    }
+    web3 = new Web3(App.web3Provider);
+  },
+
+  initContract: function () {
+    $.getJSON('Adoption.json', function (data) {
+      const AdoptionArtifact = data;
+      App.contracts.Adoption = TruffleContract(AdoptionArtifact);
+      App.contracts.Adoption.setProvider(App.web3Provider);
+
+      App.markAdopted();
+    });
+
+    App.bindEvents();
+  },
+
+  bindEvents: function () {
+    $(document).on('click', '.btn-adopt', App.handleAdopt);
+    $(document).on('click', '.btn-like', App.handleLike);
+    $(document).on('click', '#sendMessageBtn', App.handleChatMessage);
+    $(document).on('keypress', '#chatInput', function (event) {
+      if (event.which === 13) {
+        App.handleChatMessage();
+      }
+    });
+  },
+
+  markAdopted: function () {
+    var adoptionInstance;
+
+    App.contracts.Adoption.deployed()
+      .then(function (instance) {
+        adoptionInstance = instance;
+        return adoptionInstance.getAdopters.call();
+      })
+      .then(function (adopters) {
+        for (let i = 0; i < adopters.length; i++) {
+          if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
+            $('.panel-pet')
+              .eq(i)
+              .find('button.btn-adopt')
+              .text('Success')
+              .attr('disabled', true);
+          }
+        }
+      })
+      .catch(function (err) {
+        console.error('Error in markAdopted:', err.message);
+      });
+  },
+
+  handleAdopt: function (event) {
+    event.preventDefault();
+    const petId = parseInt($(event.target).data('id'));
+
+    var adoptionInstance;
+
+    web3.eth.getAccounts(function (error, accounts) {
+      if (error) {
+        console.error(error);
+      }
+
+      const account = accounts[0];
+
+      App.contracts.Adoption.deployed()
+        .then(function (instance) {
+          adoptionInstance = instance;
+          return adoptionInstance.adopt(petId, { from: account });
+        })
+        .then(function (result) {
+          return App.markAdopted();
+        })
+        .catch(function (err) {
+          console.error('Error in handleAdopt:', err.message);
+        });
+    });
+  },
+
+  handleLike: function (event) {
+    event.preventDefault();
+    const petId = parseInt($(event.target).data('id'));
+
+    // Increment the like count for this pet
+    if (!App.likes[petId]) {
+      App.likes[petId] = 0;
+    }
+    App.likes[petId]++;
+
+    // Update the like count in the UI
+    $(event.target).siblings('.like-count').text(App.likes[petId]);
+  },
+
+  handleChatMessage: async function () {
+    const chatMessages = $('#chatMessages');
+    const chatInput = $('#chatInput');
+    const message = chatInput.val().trim();
+
+    if (message) {
+      // Display user message
+      const userMessage = `<div><strong>You:</strong> ${message}</div>`;
+      chatMessages.append(userMessage);
+
+      // Clear the input field
+      chatInput.val('');
+      chatMessages.scrollTop(chatMessages[0].scrollHeight);
+
+      try {
+        // Send message to LLM API
+        const response = await App.callLLM(message);
+
+        // Display LLM's response
+        const responseMessage = `<div><strong>Bot:</strong> ${response}</div>`;
+        chatMessages.append(responseMessage);
+        chatMessages.scrollTop(chatMessages[0].scrollHeight);
+      } catch (error) {
+        const errorMessage = `<div><strong>Bot:</strong> Sorry, something went wrong. Please try again later.</div>`;
+        chatMessages.append(errorMessage);
+        console.error('Error communicating with LLM:', error);
+      }
+    }
+  },
+
+  callLLM: async function (message) {
+    const apiKey = ''; // Replace this with your OpenAI API key
+    const apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+    const requestBody = {
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: message }],
+      max_tokens: 150,
+    };
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error('Failed to fetch response from LLM');
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error('Error in callLLM:', error.message);
+      throw error;
+    }
+  },
 };
 
-$(function() {
-  $(window).load(function() {
+$(function () {
+  $(window).on('load', function () {
     App.init();
   });
 });
