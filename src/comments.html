@@ -15,57 +15,57 @@
     }
 
     /* Styling for the comments section */
-    .comments-container {
-        position: relative;
-        margin-top: 20px;
-        max-height: 80vh;
-        overflow-y: auto; /* Allow vertical scrolling if necessary */
-        background: #f9f9f9;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
+  .comments-container {
+    position: relative;
+    margin-top: 20px;
+    max-height: 80vh;
+    overflow-y: auto; /* Allow vertical scrolling if necessary */
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
 
-    .comment-item {
-        position: relative; /* Each comment in its own vertical position */
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 10px 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        overflow: hidden; /* Ensure animations are smooth */
-    }
+  .comment-item {
+    position: relative; /* Each comment in its own vertical position */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    overflow: hidden; /* Ensure animations are smooth */
+  }
 
-    /* Rolling animation for odd comments */
-    @keyframes rollFromLeft {
-        from {
-        transform: translateX(-100%);
-        }
-        to {
-        transform: translateX(100%);
-        }
+  /* Rolling animation for odd comments */
+  @keyframes rollFromLeft {
+    from {
+      transform: translateX(-100%);
     }
+    to {
+      transform: translateX(100%);
+    }
+  }
 
-    /* Rolling animation for even comments */
-    @keyframes rollFromRight {
-        from {
-        transform: translateX(100%);
-        }
-        to {
-        transform: translateX(-100%);
-        }
+  /* Rolling animation for even comments */
+  @keyframes rollFromRight {
+    from {
+      transform: translateX(100%);
     }
+    to {
+      transform: translateX(-100%);
+    }
+  }
 
-    .odd-comment {
-        animation: rollFromLeft 50s linear infinite; /* Slower animation duration */
-    }
+  .odd-comment {
+    animation: rollFromLeft 50s linear infinite; /* Slower animation duration */
+  }
 
-    .even-comment {
-        animation: rollFromRight 50s linear infinite; /* Slower animation duration */
-    }
-  </style>
+  .even-comment {
+    animation: rollFromRight 50s linear infinite; /* Slower animation duration */
+  }
+</style>
 </head>
 <body>
   <!-- Menu Bar -->
@@ -128,7 +128,59 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
 
-  <!-- Load the Unified App.js -->
-  <script src="js/app.js"></script>
+  <!-- Comments Script -->
+  <script>
+    $(document).ready(function () {
+      // Preloaded Comments
+      const preloadedComments = [
+        "I love the Golden Retrievers! They're so playful.",
+        "The French Bulldogs are adorable!",
+        "Great variety of pets available.",
+        "Adopting was such a smooth process!",
+        "Our new Boxer is amazing. Thanks!",
+        "Friendly staff and beautiful pets.",
+        "Highly recommend Pete's Pet Shop.",
+        "Our Scottish Terrier is perfect for our family!",
+        "The cats here are so cute!",
+        "Loved the adoption experience.",
+        "Our Golden Retriever is full of energy!",
+        "Thanks for helping us find our new pet!",
+        "Great pet shop with lots of options.",
+        "Highly professional and caring staff.",
+        "Amazing selection of pets!"
+      ];
+
+      const commentsContainer = $('#commentsContainer');
+      
+      // Add preloaded comments with rolling effect
+      preloadedComments.forEach((comment, index) => {
+        const isOdd = (index + 1) % 2 !== 0; // Determine if the comment is odd or even
+        const animationClass = isOdd ? 'odd-comment' : 'even-comment';
+        const commentElement = `<div class="comment-item ${animationClass}">${comment}</div>`;
+        commentsContainer.append(commentElement);
+      });
+
+      // User Comments
+      $('#commentForm').submit(function (event) {
+        event.preventDefault();
+        const userName = $('#userName').val().trim();
+        const userComment = $('#userComment').val().trim();
+
+        if (userName && userComment) {
+          // Determine odd/even for dynamic rolling
+          const existingComments = commentsContainer.find('.comment-item').length;
+          const isOdd = (existingComments + 1) % 2 !== 0;
+          const animationClass = isOdd ? 'odd-comment' : 'even-comment';
+
+          const newComment = `<div class="comment-item ${animationClass}"><strong>${userName}:</strong> ${userComment}</div>`;
+          commentsContainer.append(newComment);
+
+          // Clear the form
+          $('#userName').val('');
+          $('#userComment').val('');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

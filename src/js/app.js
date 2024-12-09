@@ -100,56 +100,6 @@ App = {
       });
   },
 
-  initComments: function () {
-    const preloadedComments = [
-      "I love the Golden Retrievers! They're so playful.",
-      "The French Bulldogs are adorable!",
-      "Great variety of pets available.",
-      "Adopting was such a smooth process!",
-      "Our new Boxer is amazing. Thanks!",
-      "Friendly staff and beautiful pets.",
-      "Highly recommend Pete's Pet Shop.",
-      "Our Scottish Terrier is perfect for our family!",
-      "The cats here are so cute!",
-      "Loved the adoption experience.",
-      "Our Golden Retriever is full of energy!",
-      "Thanks for helping us find our new pet!",
-      "Great pet shop with lots of options.",
-      "Highly professional and caring staff.",
-      "Amazing selection of pets!"
-    ];
-
-    const commentsContainer = $('#commentsContainer');
-
-    // Add preloaded comments with rolling effect
-    preloadedComments.forEach((comment, index) => {
-      const isOdd = (index + 1) % 2 !== 0; // Determine if the comment is odd or even
-      const animationClass = isOdd ? 'odd-comment' : 'even-comment';
-      const commentElement = `<div class="comment-item ${animationClass}">${comment}</div>`;
-      commentsContainer.append(commentElement);
-    });
-
-    // Handle user comment submission
-    $('#commentForm').submit(function (event) {
-      event.preventDefault();
-      const userName = $('#userName').val().trim();
-      const userComment = $('#userComment').val().trim();
-
-      if (userName && userComment) {
-        const existingComments = commentsContainer.find('.comment-item').length;
-        const isOdd = (existingComments + 1) % 2 !== 0;
-        const animationClass = isOdd ? 'odd-comment' : 'even-comment';
-
-        const newComment = `<div class="comment-item ${animationClass}"><strong>${userName}:</strong> ${userComment}</div>`;
-        commentsContainer.append(newComment);
-
-        // Clear the form
-        $('#userName').val('');
-        $('#userComment').val('');
-      }
-    });
-  },
-
   handleAdopt: function (event) {
     event.preventDefault();
     const petId = parseInt($(event.target).data('id'));

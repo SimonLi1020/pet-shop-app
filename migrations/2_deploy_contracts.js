@@ -5,5 +5,5 @@ const LeaveComment = artifacts.require("LeaveComment");
 module.exports = function(deployer) {
   deployer.deploy(Adoption);
   deployer.deploy(SendMeEther);
-  const LeaveComment = artifacts.require("LeaveComment");
+  deployer.deploy(LeaveComment);
 };
