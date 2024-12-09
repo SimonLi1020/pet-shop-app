@@ -23,8 +23,58 @@ App = {
       });
     });
 
+    App.initComments();
     await App.initWeb3();
     return App.initContract();
+  },
+
+  initComments: function () {
+    const commentsContainer = $('#commentsContainer');
+    const commentForm = $('#commentForm');
+
+    // Preload comments
+    const preloadedComments = [
+      "This is an amazing pet shop!",
+      "I adopted my dog from here, and it was the best experience!",
+      "Highly recommend Pete's Pet Shop for pet lovers!",
+      "The staff is so helpful and caring!"
+    ];
+
+    // Function to add a comment with rolling animation
+    function addComment(commentText, index) {
+      const commentDiv = $('<div></div>').addClass('comment-item');
+      commentDiv.text(commentText);
+
+      // Assign rolling animation class
+      if (index % 2 === 0) {
+        commentDiv.addClass('even-comment');
+      } else {
+        commentDiv.addClass('odd-comment');
+      }
+
+      commentsContainer.append(commentDiv);
+    }
+
+    // Load preloaded comments
+    preloadedComments.forEach((comment, index) => {
+      addComment(comment, index);
+    });
+
+    // Handle new comment submission
+    commentForm.on('submit', function (e) {
+      e.preventDefault();
+
+      const userName = $('#userName').val().trim();
+      const userComment = $('#userComment').val().trim();
+
+      if (userName && userComment) {
+        const newComment = `${userName}: ${userComment}`;
+        const index = commentsContainer.children().length;
+
+        addComment(newComment, index);
+        commentForm[0].reset(); // Clear the form
+      }
+    });
   },
 
   initWeb3: async function () {
@@ -169,7 +219,7 @@ App = {
     // console.log("ok");
     event.preventDefault();
     var amount = web3.toWei(0.1, "ether"); // Change the amount to your desired value
-    var sendMeEtherInstance;
+    var sendMeEtherInstance;0
 
     web3.eth.getAccounts(function (error, accounts) {
       if (error) {

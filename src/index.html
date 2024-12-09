@@ -10,18 +10,31 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-      /* Full-page container for the app */
+      body {
+        padding-top: 70px; /* Space for fixed navbar */
+      }
+
+      .btn-donate:hover {
+        background-color: #0056b3;
+        color: white;
+        transition: all 0.3s ease;
+      }
+
+      .button-group .btn {
+        min-width: 80px;
+        flex-grow: 1;
+        text-align: center;
+      }
+
       .container-fluid {
         height: 100vh;
       }
 
-      /* Pets section styling */
       #petsSection {
         overflow-y: auto;
         height: 100%;
       }
 
-      /* Chat area styling */
       .chat-area {
         border-left: 2px solid #ddd;
         background: #f9f9f9;
@@ -47,31 +60,23 @@
         padding: 10px;
       }
 
-      .chat-input-container .input-group {
-        display: flex;
-        gap: 5px;
-      }
-
-      /* Default Like Button Style */
       .btn-like {
-        background-color: #007bff; /* Default Bootstrap blue */
+        background-color: #007bff;
         color: white;
         border: none;
-        font-size: 1.2rem; /* Increase font size */
-        padding: 10px 20px; /* Adjust padding for larger size */
-        border-radius: 8px; /* Optional: Rounded corners */
-        transition: all 0.3s ease; /* Smooth transition for hover effects */
-        position: relative; /* Ensure pseudo-elements are positioned correctly */
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        position: relative;
       }
 
-      /* Like Button Turns Red When Active */
       .btn-like.liked {
         background-color: red;
       }
 
-      /* Add "Liked" Text When Active */
       .btn-like.liked::after {
-        content: "Liked"; /* Add "Liked" label */
+        content: "Liked";
         position: absolute;
         top: 50%;
         left: 50%;
@@ -79,26 +84,42 @@
         color: white;
         font-weight: bold;
         font-size: 1.2rem;
-        visibility: visible; /* Ensure visibility */
+        visibility: visible;
       }
 
-      /* Hide the Original Text When Liked */
       .btn-like.liked span {
         visibility: hidden;
       }
 
-      /* Change Button Text to "Unlike" on Hover */
       .btn-like.liked:hover::after {
-        content: "Unlike"; /* Replace "Liked" with "Unlike" on hover */
+        content: "Unlike";
       }
 
+      /* Styling for the comments section */
+      .comments-container {
+        position: relative;
+        margin-top: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+        background: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
 
-      body {
-        padding-top: 70px; /* Space for fixed navbar */
+      .comment-item {
+        position: relative;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
     </style>
   </head>
   <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -116,76 +137,123 @@
           </button>
           <a class="navbar-brand" href="#">Pete's Pet Shop</a>
         </div>
-    
+
         <div class="collapse navbar-collapse" id="navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#indexSection">Index</a></li>
+            <li><a href="#commentsSection">Comments</a></li>
+          </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
               <button class="btn btn-primary navbar-btn btn-donate">Donate</button>
             </li>
-            <li><a href="#petsSection">Home</a></li>
-            <li><a href="#chatArea">Chat</a></li>
-            <li><a href="comments.html">Comments</a></li>
           </ul>
         </div>
       </div>
     </nav>
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Pets Section -->
-        <div class="col-md-9" id="petsSection">
-          <h1 class="text-center">Pete's Pet Shop</h1>
-          <hr/>
-          <div id="petsRow" class="row">
-            <!-- Pets will load dynamically here -->
-          </div>
-        </div>
 
-        <!-- Chat Area -->
-        <div class="col-md-3 chat-area">
-          <h4>Chat with AI Bot</h4>
-          <div class="chat-messages" id="chatMessages">
-            <!-- Chat messages will appear here -->
+    <!-- Index Section -->
+    <section id="indexSection">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Pets Section -->
+          <div class="col-md-9" id="petsSection">
+            <h1 class="text-center">Pete's Pet Shop</h1>
+            <hr />
+            <div id="petsRow" class="row">
+              <!-- Pets will load dynamically here -->
+            </div>
           </div>
-          <div class="chat-input-container">
-            <div class="input-group">
-              <input
-                type="text"
-                id="chatInput"
-                class="form-control"
-                placeholder="Type your message..."
-              />
-              <button id="sendMessageBtn" class="btn btn-primary">Send</button>
+
+          <!-- Chat Section -->
+          <div class="col-md-3 chat-area" id="chatArea">
+            <h4>Chat with AI Bot</h4>
+            <div class="chat-messages" id="chatMessages">
+              <!-- Chat messages will appear here -->
+            </div>
+            <div class="chat-input-container">
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="chatInput"
+                  class="form-control"
+                  placeholder="Type your message..."
+                />
+                <button id="sendMessageBtn" class="btn btn-primary">Send</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Pet Template (hidden, used by JavaScript) -->
-    <div id="petTemplate" style="display: none;">
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-default panel-pet">
-          <div class="panel-heading">
-            <h3 class="panel-title">Scrappy</h3>
-          </div>
-          <div class="panel-body">
-            <img alt="140x140" class="img-rounded img-center" style="width: 100%;" src="" />
-            <br/><br/>
-            <strong>Breed</strong>: <span class="pet-breed"></span><br/>
-            <strong>Age</strong>: <span class="pet-age"></span><br/>
-            <strong>Location</strong>: <span class="pet-location"></span><br/><br/>
-            <button class="btn btn-default btn-adopt" type="button" data-id="0">Adopt</button>
-            <br/><br/>
-            <!-- Like button and counter -->
-            <div>
-              <button class="btn btn-primary btn-like" type="button" data-id="0"><span>Like</span></button>
-              <!-- <span class="like-count">0</span> Likes -->
+      
+      <!-- Hidden Pet Template -->
+      <div id="petTemplate" style="display: none;">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="panel panel-default panel-pet">
+            <div class="panel-heading">
+              <h3 class="panel-title">Scrappy</h3>
+            </div>
+            <div class="panel-body">
+              <img alt="140x140" class="img-rounded img-center" style="width: 100%;" src="" />
+              <br/><br/>
+              <strong>Breed</strong>: <span class="pet-breed"></span><br/>
+              <strong>Age</strong>: <span class="pet-age"></span><br/>
+              <strong>Location</strong>: <span class="pet-location"></span><br/><br/>
+              <div class="button-group">
+                <button class="btn btn-default btn-adopt" type="button" data-id="0">Adopt</button>
+                <button class="btn btn-default btn-return" type="button" data-id="0" style="display: none;">Return</button>
+                <button class="btn btn-default btn-history" type="button" data-id="0">History</button>
+              </div>
+              <br/>
+              <div>
+                <button class="btn btn-primary btn-like" type="button" data-id="0"><span>Like</span></button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  
+    </section>
+
+    <!-- Comments Section -->
+    <section id="commentsSection">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8">
+            <h2>What People Say About Our Pets</h2>
+            <div class="comments-container" id="commentsContainer">
+              <!-- Preloaded comments and user-added comments will appear here -->
+            </div>
+          </div>
+
+          <div class="col-md-4 user-comments">
+            <h3>Add Your Comment</h3>
+            <form id="commentForm">
+              <div class="form-group">
+                <label for="userName">Name</label>
+                <input
+                  type="text"
+                  id="userName"
+                  class="form-control"
+                  placeholder="Your name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="userComment">Comment</label>
+                <textarea
+                  id="userComment"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Write your comment here..."
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
