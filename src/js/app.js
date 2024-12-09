@@ -52,6 +52,15 @@ App = {
       App.markAdopted();
     });
 
+    $.getJSON("SendMeEther.json", function (data) {
+      // Get the contract artifact file and instantiate it with @truffle/contract
+      var SendMeEtherArtifact = data;
+      App.contracts.SendMeEther = TruffleContract(SendMeEtherArtifact);
+
+      // Set the provider for the contract
+      App.contracts.SendMeEther.setProvider(App.web3Provider);
+    });
+
     App.bindEvents();
   },
 
@@ -59,6 +68,7 @@ App = {
     $(document).on('click', '.btn-adopt', App.handleAdopt);
     $(document).on('click', '.btn-like', App.handleLike);
     $(document).on('click', '#sendMessageBtn', App.handleChatMessage);
+    $(document).on("click", ".btn-donate", App.handleDonation);
     $(document).on('keypress', '#chatInput', function (event) {
       if (event.which === 13) {
         App.handleChatMessage();
@@ -90,6 +100,56 @@ App = {
       });
   },
 
+  initComments: function () {
+    const preloadedComments = [
+      "I love the Golden Retrievers! They're so playful.",
+      "The French Bulldogs are adorable!",
+      "Great variety of pets available.",
+      "Adopting was such a smooth process!",
+      "Our new Boxer is amazing. Thanks!",
+      "Friendly staff and beautiful pets.",
+      "Highly recommend Pete's Pet Shop.",
+      "Our Scottish Terrier is perfect for our family!",
+      "The cats here are so cute!",
+      "Loved the adoption experience.",
+      "Our Golden Retriever is full of energy!",
+      "Thanks for helping us find our new pet!",
+      "Great pet shop with lots of options.",
+      "Highly professional and caring staff.",
+      "Amazing selection of pets!"
+    ];
+
+    const commentsContainer = $('#commentsContainer');
+
+    // Add preloaded comments with rolling effect
+    preloadedComments.forEach((comment, index) => {
+      const isOdd = (index + 1) % 2 !== 0; // Determine if the comment is odd or even
+      const animationClass = isOdd ? 'odd-comment' : 'even-comment';
+      const commentElement = `<div class="comment-item ${animationClass}">${comment}</div>`;
+      commentsContainer.append(commentElement);
+    });
+
+    // Handle user comment submission
+    $('#commentForm').submit(function (event) {
+      event.preventDefault();
+      const userName = $('#userName').val().trim();
+      const userComment = $('#userComment').val().trim();
+
+      if (userName && userComment) {
+        const existingComments = commentsContainer.find('.comment-item').length;
+        const isOdd = (existingComments + 1) % 2 !== 0;
+        const animationClass = isOdd ? 'odd-comment' : 'even-comment';
+
+        const newComment = `<div class="comment-item ${animationClass}"><strong>${userName}:</strong> ${userComment}</div>`;
+        commentsContainer.append(newComment);
+
+        // Clear the form
+        $('#userName').val('');
+        $('#userComment').val('');
+      }
+    });
+  },
+
   handleAdopt: function (event) {
     event.preventDefault();
     const petId = parseInt($(event.target).data('id'));
@@ -117,19 +177,81 @@ App = {
     });
   },
 
+  // handleLike: function (event) {
+  //   event.preventDefault();
+  //   const petId = parseInt($(event.target).data('id'));
+
+  //   // Increment the like count for this pet
+  //   if (!App.likes[petId]) {
+  //     App.likes[petId] = 0;
+  //   }
+  //   App.likes[petId]++;
+
+  //   // Update the like count in the UI
+  //   $(event.target).siblings('.like-count').text(App.likes[petId]);
+  // },
+
   handleLike: function (event) {
     event.preventDefault();
     const petId = parseInt($(event.target).data('id'));
-
-    // Increment the like count for this pet
+    const likeButton = $(event.target); // Get the clicked button
+  
+    // Toggle the "liked" state
     if (!App.likes[petId]) {
-      App.likes[petId] = 0;
+      App.likes[petId] = 0; // Initialize like count if not already set
     }
-    App.likes[petId]++;
-
+  
+    if (likeButton.hasClass('liked')) {
+      // If already liked, unlike it
+      App.likes[petId]--;
+      likeButton.removeClass('liked'); // Remove the "liked" class
+    } else {
+      // If not liked, like it
+      App.likes[petId]++;
+      likeButton.addClass('liked'); // Add the "liked" class
+    }
+  
     // Update the like count in the UI
-    $(event.target).siblings('.like-count').text(App.likes[petId]);
+    likeButton.siblings('.like-count').text(App.likes[petId]);
   },
+
+  handleDonation: function (event) {
+    // console.log("ok");
+    event.preventDefault();
+    var amount = web3.toWei(0.1, "ether"); // Change the amount to your desired value
+    var sendMeEtherInstance;
+
+    web3.eth.getAccounts(function (error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.SendMeEther.deployed().then(function (instance) {
+        sendMeEtherInstance = instance;
+
+        // Send Ether to the contract using the receiveEther function
+        return sendMeEtherInstance.receiveEther({
+          from: account,
+          value: amount
+        });
+      }).then(function (result) {
+        // Optionally, update UI or perform actions after donation
+        console.log("Donation successful:", result);
+      }).catch(function (err) {
+        console.log(err.message);
+      });
+    });
+  },
+
+  
+  // handleDonation: function (event) {
+  //   event.preventDefault();
+  //   console.log("Donate button clicked!");
+  // },
+  
+
 
   handleChatMessage: async function () {
     const chatMessages = $('#chatMessages');
@@ -166,7 +288,7 @@ App = {
     const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
     const requestBody = {
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-3.5-turbo', 
       messages: [{ role: 'user', content: message }],
       max_tokens: 150,
     };

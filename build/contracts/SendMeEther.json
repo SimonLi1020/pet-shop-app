@@ -1,21 +1,26 @@
 {
-  "contractName": "Adoption",
+  "contractName": "SendMeEther",
   "abi": [
     {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
       "constant": true,
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "adopters",
+      "inputs": [],
+      "name": "functionCalled",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "string",
           "name": "",
-          "type": "address"
+          "type": "string"
         }
       ],
       "payable": false,
@@ -24,46 +29,19 @@
     },
     {
       "constant": false,
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "petId",
-          "type": "uint256"
-        }
-      ],
-      "name": "adopt",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": true,
       "inputs": [],
-      "name": "getAdopters",
-      "outputs": [
-        {
-          "internalType": "address[16]",
-          "name": "",
-          "type": "address[16]"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
+      "name": "receiveEther",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"petId\",\"type\":\"uint256\"}],\"name\":\"adopt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"adopters\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getAdopters\",\"outputs\":[{\"internalType\":\"address[16]\",\"name\":\"\",\"type\":\"address[16]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/14810/Desktop/CSCD01/pet-shop-app/contracts/Adoption.sol\":\"Adoption\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/14810/Desktop/CSCD01/pet-shop-app/contracts/Adoption.sol\":{\"keccak256\":\"0x5bcbdeb88725e3f8d34eefb2dc667243685c11dae5ac09c761a9d7388677ea97\",\"urls\":[\"bzz-raw://a9090e273b4e49d405e47dc4125a92196ccf8c51edfb6cc7e5c319ca3277981a\",\"dweb:/ipfs/QmPkXukGhcaAmNJZvvfcfVfLht9pqzpK3W5JayaQPs3LPd\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506102b9806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80633de4eb171461004657806343ae80d31461008c5780638588b2c5146100fa575b600080fd5b61004e61013c565b6040518082601060200280838360005b8381101561007957808201518184015260208101905061005e565b5050505090500191505060405180910390f35b6100b8600480360360208110156100a257600080fd5b81019080803590602001909291905050506101bd565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6101266004803603602081101561011057600080fd5b81019080803590602001909291905050506101f0565b6040518082815260200191505060405180910390f35b610144610261565b60006010806020026040519081016040528092919082601080156101b3576020028201915b8160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019060010190808311610169575b5050505050905090565b600081601081106101ca57fe5b016000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008082101580156102035750600f8211155b61020c57600080fd5b336000836010811061021a57fe5b0160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550819050919050565b60405180610200016040528060109060208202803883398082019150509050509056fea265627a7a7231582020ccd60259801893d1dda5212e833c26b18ed8f1263faec8c8e53347a623178064736f6c63430005100032",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80633de4eb171461004657806343ae80d31461008c5780638588b2c5146100fa575b600080fd5b61004e61013c565b6040518082601060200280838360005b8381101561007957808201518184015260208101905061005e565b5050505090500191505060405180910390f35b6100b8600480360360208110156100a257600080fd5b81019080803590602001909291905050506101bd565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6101266004803603602081101561011057600080fd5b81019080803590602001909291905050506101f0565b6040518082815260200191505060405180910390f35b610144610261565b60006010806020026040519081016040528092919082601080156101b3576020028201915b8160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019060010190808311610169575b5050505050905090565b600081601081106101ca57fe5b016000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008082101580156102035750600f8211155b61020c57600080fd5b336000836010811061021a57fe5b0160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550819050919050565b60405180610200016040528060109060208202803883398082019150509050509056fea265627a7a7231582020ccd60259801893d1dda5212e833c26b18ed8f1263faec8c8e53347a623178064736f6c63430005100032",
-  "sourceMap": "27:395:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:395:0;;;;;;;",
-  "deployedSourceMap": "27:395:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:395:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;319:98;;;:::i;:::-;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;319:98:0;;;;;;;;;;;;;;;;52:27;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;52:27:0;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;111:168;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;111:168:0;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;319:98;363:18;;:::i;:::-;401:8;394:15;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;319:98;:::o;52:27::-;;;;;;;;;;;;;;;;;;;;;;;:::o;111:168::-;154:4;188:1;179:5;:10;;:25;;;;;202:2;193:5;:11;;179:25;171:34;;;;;;236:10;218:8;227:5;218:15;;;;;;;;;:28;;;;;;;;;;;;;;;;;;266:5;259:12;;111:168;;;:::o;27:395::-;;;;;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;148:4;140:6;136:17;126:27;;0:157;27:395:0;;;;:::o",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"constant\":true,\"inputs\":[],\"name\":\"functionCalled\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"receiveEther\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/14810/Desktop/CSCD01/pet-shop-app/contracts/Adoption.sol\":\"SendMeEther\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/14810/Desktop/CSCD01/pet-shop-app/contracts/Adoption.sol\":{\"keccak256\":\"0x5bcbdeb88725e3f8d34eefb2dc667243685c11dae5ac09c761a9d7388677ea97\",\"urls\":[\"bzz-raw://a9090e273b4e49d405e47dc4125a92196ccf8c51edfb6cc7e5c319ca3277981a\",\"dweb:/ipfs/QmPkXukGhcaAmNJZvvfcfVfLht9pqzpK3W5JayaQPs3LPd\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040518060400160405280600b81526020017f636f6e7374727563746f720000000000000000000000000000000000000000008152506000908051906020019061005c929190610062565b50610107565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100a357805160ff19168380011785556100d1565b828001600101855582156100d1579182015b828111156100d05782518255916020019190600101906100b5565b5b5090506100de91906100e2565b5090565b61010491905b808211156101005760008160009055506001016100e8565b5090565b90565b6102d7806101166000396000f3fe6080604052600436106100295760003560e01c8063a3912ec814610077578063cc81afc814610081575b6040518060400160405280600881526020017f66616c6c6261636b000000000000000000000000000000000000000000000000815250600090805190602001906100749291906101fd565b50005b61007f610111565b005b34801561008d57600080fd5b5061009661015f565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100d65780820151818401526020810190506100bb565b50505050905090810190601f1680156101035780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6040518060400160405280600c81526020017f72656365697665457468657200000000000000000000000000000000000000008152506000908051906020019061015c9291906101fd565b50565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101f55780601f106101ca576101008083540402835291602001916101f5565b820191906000526020600020905b8154815290600101906020018083116101d857829003601f168201915b505050505081565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061023e57805160ff191683800117855561026c565b8280016001018555821561026c579182015b8281111561026b578251825591602001919060010190610250565b5b509050610279919061027d565b5090565b61029f91905b8082111561029b576000816000905550600101610283565b5090565b9056fea265627a7a72315820a1baf7f6c63b33280cca86d2ebf479d2399a770fc90dd348bd839a5391089c9b64736f6c63430005100032",
+  "deployedBytecode": "0x6080604052600436106100295760003560e01c8063a3912ec814610077578063cc81afc814610081575b6040518060400160405280600881526020017f66616c6c6261636b000000000000000000000000000000000000000000000000815250600090805190602001906100749291906101fd565b50005b61007f610111565b005b34801561008d57600080fd5b5061009661015f565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100d65780820151818401526020810190506100bb565b50505050905090810190601f1680156101035780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6040518060400160405280600c81526020017f72656365697665457468657200000000000000000000000000000000000000008152506000908051906020019061015c9291906101fd565b50565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101f55780601f106101ca576101008083540402835291602001916101f5565b820191906000526020600020905b8154815290600101906020018083116101d857829003601f168201915b505050505081565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061023e57805160ff191683800117855561026c565b8280016001018555821561026c579182015b8281111561026b578251825591602001919060010190610250565b5b509050610279919061027d565b5090565b61029f91905b8082111561029b576000816000905550600101610283565b5090565b9056fea265627a7a72315820a1baf7f6c63b33280cca86d2ebf479d2399a770fc90dd348bd839a5391089c9b64736f6c63430005100032",
+  "sourceMap": "428:499:0:-;;;550:63;8:9:-1;5:2;;;30:1;27;20:12;5:2;550:63:0;575:30;;;;;;;;;;;;;;;;;:14;:30;;;;;;;;;;;;:::i;:::-;;428:499;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "428:499:0:-;;;;;;;;;;;;;;;;;;;;;;;887:27;;;;;;;;;;;;;;;;;:14;:27;;;;;;;;;;;;:::i;:::-;;428:499;687:84;;;:::i;:::-;;462:28;;8:9:-1;5:2;;;30:1;27;20:12;5:2;462:28:0;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;462:28:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;687:84;732:31;;;;;;;;;;;;;;;;;:14;:31;;;;;;;;;;;;:::i;:::-;;687:84::o;462:28::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;428:499::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
   "source": "pragma solidity ^0.5.0;\r\n\r\ncontract Adoption {\r\n    address[16] public adopters;\r\n\r\n    // Adopting a pet\r\n    function adopt(uint petId) public returns (uint) {\r\n        require(petId >= 0 && petId <= 15);\r\n\r\n        adopters[petId] = msg.sender;\r\n\r\n        return petId;\r\n    }\r\n\r\n    // Retrieving the adopters\r\n    function getAdopters() public view returns (address[16] memory) {\r\n        return adopters;\r\n    }\r\n\r\n}\r\n\r\n\r\ncontract SendMeEther {\r\n    \r\n    string public functionCalled;\r\n    \r\n    //constructor of the contract SendMeEther\r\n    constructor() public {\r\n\tfunctionCalled = \"constructor\";\r\n    }\r\n\r\n    //function allowing an ether payment to the contract address\r\n    function receiveEther() external payable {\r\n\tfunctionCalled = \"receiveEther\";\r\n    }\r\n\r\n    //fallback function allowing an ether payment to the contract address \r\n    function() external payable {\r\n\tfunctionCalled = \"fallback\";\r\n    }\r\n\r\n} ",
   "sourcePath": "C:/Users/14810/Desktop/CSCD01/pet-shop-app/contracts/Adoption.sol",
   "ast": {
@@ -1790,12 +1768,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x062e0640E24E98C2e9A2a83bD24d430a08960563",
-      "transactionHash": "0x207c909e5fc2b0a20ef1eaea11e279cf5d634710e908e9160ae1b2c94728b361"
+      "address": "0x3a089786060F7223a751b50Ad0586841ad4154B3",
+      "transactionHash": "0xeddb09fbdc05a558d4e7286dfc11c4129c0e92795b8d3bccb8e212ae91a844f9"
     }
   },
   "schemaVersion": "3.0.22",
-  "updatedAt": "2024-12-09T00:33:12.728Z",
+  "updatedAt": "2024-12-09T00:33:12.730Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

@@ -51,9 +51,84 @@
         display: flex;
         gap: 5px;
       }
+
+      /* Default Like Button Style */
+      .btn-like {
+        background-color: #007bff; /* Default Bootstrap blue */
+        color: white;
+        border: none;
+        font-size: 1.2rem; /* Increase font size */
+        padding: 10px 20px; /* Adjust padding for larger size */
+        border-radius: 8px; /* Optional: Rounded corners */
+        transition: all 0.3s ease; /* Smooth transition for hover effects */
+        position: relative; /* Ensure pseudo-elements are positioned correctly */
+      }
+
+      /* Like Button Turns Red When Active */
+      .btn-like.liked {
+        background-color: red;
+      }
+
+      /* Add "Liked" Text When Active */
+      .btn-like.liked::after {
+        content: "Liked"; /* Add "Liked" label */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        visibility: visible; /* Ensure visibility */
+      }
+
+      /* Hide the Original Text When Liked */
+      .btn-like.liked span {
+        visibility: hidden;
+      }
+
+      /* Change Button Text to "Unlike" on Hover */
+      .btn-like.liked:hover::after {
+        content: "Unlike"; /* Replace "Liked" with "Unlike" on hover */
+      }
+
+
+      body {
+        padding-top: 70px; /* Space for fixed navbar */
+      }
     </style>
   </head>
   <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#navbar-collapse"
+            aria-expanded="false"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Pete's Pet Shop</a>
+        </div>
+    
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <button class="btn btn-primary navbar-btn btn-donate">Donate</button>
+            </li>
+            <li><a href="#petsSection">Home</a></li>
+            <li><a href="#chatArea">Chat</a></li>
+            <li><a href="comments.html">Comments</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
     <div class="container-fluid">
       <div class="row">
         <!-- Pets Section -->
@@ -103,14 +178,14 @@
             <br/><br/>
             <!-- Like button and counter -->
             <div>
-              <button class="btn btn-primary btn-like" type="button" data-id="0">Like</button>
-              <span class="like-count">0</span> Likes
+              <button class="btn btn-primary btn-like" type="button" data-id="0"><span>Like</span></button>
+              <!-- <span class="like-count">0</span> Likes -->
             </div>
           </div>
         </div>
       </div>
     </div>
-    
+  
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comments - Pete's Pet Shop</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      padding-top: 70px; /* Space for the fixed navbar */
+    }
+
+    /* Styling for the comments section */
+    .comments-container {
+        position: relative;
+        margin-top: 20px;
+        max-height: 80vh;
+        overflow-y: auto; /* Allow vertical scrolling if necessary */
+        background: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .comment-item {
+        position: relative; /* Each comment in its own vertical position */
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        overflow: hidden; /* Ensure animations are smooth */
+    }
+
+    /* Rolling animation for odd comments */
+    @keyframes rollFromLeft {
+        from {
+        transform: translateX(-100%);
+        }
+        to {
+        transform: translateX(100%);
+        }
+    }
+
+    /* Rolling animation for even comments */
+    @keyframes rollFromRight {
+        from {
+        transform: translateX(100%);
+        }
+        to {
+        transform: translateX(-100%);
+        }
+    }
+
+    .odd-comment {
+        animation: rollFromLeft 50s linear infinite; /* Slower animation duration */
+    }
+
+    .even-comment {
+        animation: rollFromRight 50s linear infinite; /* Slower animation duration */
+    }
+  </style>
+</head>
+<body>
+  <!-- Menu Bar -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">Pete's Pet Shop</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html#petsSection">Home</a></li>
+          <li><a href="index.html#chatArea">Chat</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li class="active"><a href="comments.html">Comments</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <!-- Comments Section -->
+      <div class="col-md-8">
+        <h2>What People Say About Our Pets</h2>
+        <div class="comments-container" id="commentsContainer">
+          <!-- Preloaded comments and user-added comments will appear here -->
+        </div>
+      </div>
+
+      <!-- User Comments Section -->
+      <div class="col-md-4 user-comments">
+        <h3>Add Your Comment</h3>
+        <form id="commentForm">
+          <div class="form-group">
+            <label for="userName">Name</label>
+            <input type="text" id="userName" class="form-control" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label for="userComment">Comment</label>
+            <textarea id="userComment" class="form-control" rows="4" placeholder="Write your comment here..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Comment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and Bootstrap -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+  <!-- Load the Unified App.js -->
+  <script src="js/app.js"></script>
+</body>
+</html>
