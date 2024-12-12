@@ -36,4 +36,3 @@ MetaMask v10.13.0
    ```javascript
    npm run dev
    ```
-```
