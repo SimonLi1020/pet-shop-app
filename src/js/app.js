@@ -16,17 +16,17 @@ App = {
   },
 
   petsData: [
-    { id: 1, name: "Frieda", breed: "Scottish Terrier", age: 3, location: "Lisco, Alabama", likes: 0 },
-    { id: 2, name: "Gina", breed: "Scottish Terrier", age: 3, location: "Tooleville, West Virginia", likes: 0 },
-    { id: 3, name: "Collins", breed: "French Bulldog", age: 2, location: "Freeburn, Idaho", likes: 0 },
-    { id: 4, name: "Melissa", breed: "Boxer", age: 2, location: "Camas, Pennsylvania", likes: 0 },
-    { id: 5, name: "Jeanine", breed: "French Bulldog", age: 2, location: "Gerber, South Dakota", likes: 0 },
-    { id: 6, name: "Elvia", breed: "French Bulldog", age: 3, location: "Innsbrook, Illinois", likes: 0 },
-    { id: 7, name: "Latisha", breed: "Golden Retriever", age: 3, location: "Soudan, Louisiana", likes: 0 },
-    { id: 8, name: "Coleman", breed: "Golden Retriever", age: 3, location: "Jacksonwald, Palau", likes: 0 },
-    { id: 9, name: "Kristina", breed: "Golden Retriever", age: 4, location: "Sultana, Massachusetts", likes: 0 },
-    { id: 10, name: "Ethel", breed: "Golden Retriever", age: 2, location: "Broadlands, Oregon", likes: 0 },
-    { id: 11, name: "Terry", breed: "Golden Retriever", age: 2, location: "Dawn, Wisconsin", likes: 0 }
+    { id: 1, name: "Frieda", breed: "Scottish Terrier", age: 3, location: "Lisco, Alabama"},
+    { id: 2, name: "Gina", breed: "Scottish Terrier", age: 3, location: "Tooleville, West Virginia"},
+    { id: 3, name: "Collins", breed: "French Bulldog", age: 2, location: "Freeburn, Idaho"},
+    { id: 4, name: "Melissa", breed: "Boxer", age: 2, location: "Camas, Pennsylvania"},
+    { id: 5, name: "Jeanine", breed: "French Bulldog", age: 2, location: "Gerber, South Dakota"},
+    { id: 6, name: "Elvia", breed: "French Bulldog", age: 3, location: "Innsbrook, Illinois"},
+    { id: 7, name: "Latisha", breed: "Golden Retriever", age: 3, location: "Soudan, Louisiana"},
+    { id: 8, name: "Coleman", breed: "Golden Retriever", age: 3, location: "Jacksonwald, Palau"},
+    { id: 9, name: "Kristina", breed: "Golden Retriever", age: 4, location: "Sultana, Massachusetts"},
+    { id: 10, name: "Ethel", breed: "Golden Retriever", age: 2, location: "Broadlands, Oregon"},
+    { id: 11, name: "Terry", breed: "Golden Retriever", age: 2, location: "Dawn, Wisconsin"}
   ],
 
   init: async function () {
@@ -172,30 +172,52 @@ App = {
 
   handleComment: async function (e) {
     e.preventDefault();
-    const userName = $('#userName').val().trim();
-    const userComment = $('#userComment').val().trim();
-    const commentsContainer = $('#commentsContainer');
-  
-    if (userName && userComment) {
-      try {
-        // const donationHandled = await App.handleDonation(e);
-        App.handleDonation(e);
 
-        const donationHandled = true;
+    try {
+      const amount = web3.toWei(0.1, "ether"); // Change the amount to your desired value
+      var sendMeEtherInstance;
 
-        console.log("Result of handleDonation:", donationHandled);
-        if (donationHandled) {
-          const newComment = `${userName}: ${userComment}`;
-          const index = commentsContainer.children().length;
-          App.addComment(newComment, index, commentsContainer);
-          console.log("Comment added successfully.");
-        } else {
-          console.error("Donation failed, comment not added.");
+      web3.eth.getAccounts(function (error, accounts) {
+        if (error) {
+          console.log(error);
+          return false;
         }
-      } catch (error) {
-        console.error("Error during donation or comment submission:", error.message);
-      }
-      $('#commentForm')[0].reset();
+        var account = accounts[0];
+
+        App.contracts.SendMeEther.deployed().then(function (instance) {
+          sendMeEtherInstance = instance;
+
+          // Send Ether to the contract using the receiveEther function
+          return sendMeEtherInstance.receiveEther({ 
+            from: account,
+            value: amount
+          });
+        }).then(function (result) {
+          console.log("Donation successful:", result);
+          const userName = $('#userName').val().trim();
+          const userComment = $('#userComment').val().trim();
+          const commentsContainer = $('#commentsContainer');
+        
+          if (userName && userComment) {
+            try {
+              const newComment = `${userName}: ${userComment}`;
+              const index = commentsContainer.children().length;
+              App.addComment(newComment, index, commentsContainer);
+              console.log("Comment added successfully.");
+            } catch (error) {
+              console.error("Error during donation or comment submission:", error.message);
+            }
+            $('#commentForm')[0].reset();
+          }
+          return true;
+        }).catch(function (err) {
+          console.log(err.message);
+          return false;
+        });
+      });
+    } catch (error){
+      console.error("Error in handleDonation:", error.message);
+      return false; // Return false on failure
     }
   },
 
