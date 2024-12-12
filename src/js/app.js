@@ -1,7 +1,7 @@
 App = {
   web3Provider: null,
   contracts: {},
-  likes: {}, // Track likes for each pet
+  likes: {},
 
   init: async function () {
     // Initialize pets and chat area
@@ -16,9 +16,8 @@ App = {
         petTemplate.find('.pet-age').text(pet.age);
         petTemplate.find('.pet-location').text(pet.location);
         petTemplate.find('.btn-adopt').attr('data-id', pet.id);
+        petTemplate.find(".btn-return").attr("data-id", pet.id);
         petTemplate.find('.btn-like').attr('data-id', pet.id);
-        petTemplate.find('.like-count').text(App.likes[pet.id] || 0);
-
         petsRow.append(petTemplate.html());
       });
     });
@@ -40,40 +39,9 @@ App = {
       "The staff is so helpful and caring!"
     ];
 
-    // Function to add a comment with rolling animation
-    function addComment(commentText, index) {
-      const commentDiv = $('<div></div>').addClass('comment-item');
-      commentDiv.text(commentText);
-
-      // Assign rolling animation class
-      if (index % 2 === 0) {
-        commentDiv.addClass('even-comment');
-      } else {
-        commentDiv.addClass('odd-comment');
-      }
-
-      commentsContainer.append(commentDiv);
-    }
-
     // Load preloaded comments
     preloadedComments.forEach((comment, index) => {
-      addComment(comment, index);
-    });
-
-    // Handle new comment submission
-    commentForm.on('submit', function (e) {
-      e.preventDefault();
-
-      const userName = $('#userName').val().trim();
-      const userComment = $('#userComment').val().trim();
-
-      if (userName && userComment) {
-        const newComment = `${userName}: ${userComment}`;
-        const index = commentsContainer.children().length;
-
-        addComment(newComment, index);
-        commentForm[0].reset(); // Clear the form
-      }
+      App.addComment(comment, index, commentsContainer);
     });
   },
 
@@ -117,14 +85,55 @@ App = {
   bindEvents: function () {
     $(document).on('click', '.btn-adopt', App.handleAdopt);
     $(document).on('click', '.btn-like', App.handleLike);
+    $(document).on("click", ".btn-return", App.handleReturn);
     $(document).on('click', '#sendMessageBtn', App.handleChatMessage);
     $(document).on("click", ".btn-donate", App.handleDonation);
-    $(document).on('keypress', '#chatInput', function (event) {
-      if (event.which === 13) {
-        App.handleChatMessage();
-      }
-    });
+    $(document).on('submit', '#commentForm', App.handleComment);
   },
+
+  handleComment: async function (e) {
+    e.preventDefault();
+    const userName = $('#userName').val().trim();
+    const userComment = $('#userComment').val().trim();
+    const commentsContainer = $('#commentsContainer');
+  
+    if (userName && userComment) {
+      try {
+        // const donationHandled = await App.handleDonation(e);
+        App.handleDonation(e);
+
+        const donationHandled = true;
+
+        console.log("Result of handleDonation:", donationHandled);
+        if (donationHandled) {
+          const newComment = `${userName}: ${userComment}`;
+          const index = commentsContainer.children().length;
+          App.addComment(newComment, index, commentsContainer);
+          console.log("Comment added successfully.");
+        } else {
+          console.error("Donation failed, comment not added.");
+        }
+      } catch (error) {
+        console.error("Error during donation or comment submission:", error.message);
+      }
+      $('#commentForm')[0].reset();
+    }
+  },
+
+  addComment: function (commentText, index, commentsContainer) {
+    const commentDiv = $('<div></div>').addClass('comment-item');
+    commentDiv.text(commentText);
+
+    // Assign rolling animation class
+    if (index % 2 === 0) {
+      commentDiv.addClass('even-comment');
+    } else {
+      commentDiv.addClass('odd-comment');
+    }
+
+    commentsContainer.append(commentDiv);
+  },
+  
 
   markAdopted: function () {
     var adoptionInstance;
@@ -135,25 +144,39 @@ App = {
         return adoptionInstance.getAdopters.call();
       })
       .then(function (adopters) {
-        for (let i = 0; i < adopters.length; i++) {
-          if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
-            $('.panel-pet')
+        for (i = 0; i < adopters.length; i++) {
+          if (adopters[i] !== "0x0000000000000000000000000000000000000000") {
+            $(".panel-pet")
               .eq(i)
-              .find('button.btn-adopt')
-              .text('Success')
-              .attr('disabled', true);
+              .find(".btn-adopt")
+              .text("Success")
+              .attr("disabled", true);
+
+            $(".panel-pet")
+              .eq(i)
+              .find(".btn-return")
+              .css("display", "inline-block");
+          } else {
+            $(".panel-pet")
+              .eq(i)
+              .find(".btn-adopt")
+              .text("Adopt")
+              .attr("disabled", false);
+
+            $(".panel-pet").eq(i).find(".btn-return").css("display", "none");
           }
         }
       })
       .catch(function (err) {
-        console.error('Error in markAdopted:', err.message);
+        console.log(err.message);
       });
   },
+
 
   handleAdopt: function (event) {
     event.preventDefault();
     const petId = parseInt($(event.target).data('id'));
-
+    console.log("petId: ", petId);
     var adoptionInstance;
 
     web3.eth.getAccounts(function (error, accounts) {
@@ -177,30 +200,16 @@ App = {
     });
   },
 
-  // handleLike: function (event) {
-  //   event.preventDefault();
-  //   const petId = parseInt($(event.target).data('id'));
-
-  //   // Increment the like count for this pet
-  //   if (!App.likes[petId]) {
-  //     App.likes[petId] = 0;
-  //   }
-  //   App.likes[petId]++;
-
-  //   // Update the like count in the UI
-  //   $(event.target).siblings('.like-count').text(App.likes[petId]);
-  // },
-
   handleLike: function (event) {
     event.preventDefault();
     const petId = parseInt($(event.target).data('id'));
     const likeButton = $(event.target); // Get the clicked button
-  
+
     // Toggle the "liked" state
     if (!App.likes[petId]) {
       App.likes[petId] = 0; // Initialize like count if not already set
     }
-  
+
     if (likeButton.hasClass('liked')) {
       // If already liked, unlike it
       App.likes[petId]--;
@@ -210,17 +219,17 @@ App = {
       App.likes[petId]++;
       likeButton.addClass('liked'); // Add the "liked" class
     }
-  
+
     // Update the like count in the UI
     likeButton.siblings('.like-count').text(App.likes[petId]);
   },
 
-  handleDonation: function (event) {
-    // console.log("ok");
+  handleReturn: function (event) {
     event.preventDefault();
-    var amount = web3.toWei(0.1, "ether"); // Change the amount to your desired value
-    var sendMeEtherInstance;0
 
+    var petId = parseInt($(event.target).data("id"));
+    console.log("petId: ", petId);
+    var adoptionInstance;
     web3.eth.getAccounts(function (error, accounts) {
       if (error) {
         console.log(error);
@@ -228,30 +237,55 @@ App = {
 
       var account = accounts[0];
 
-      App.contracts.SendMeEther.deployed().then(function (instance) {
-        sendMeEtherInstance = instance;
-
-        // Send Ether to the contract using the receiveEther function
-        return sendMeEtherInstance.receiveEther({
-          from: account,
-          value: amount
+      App.contracts.Adoption.deployed()
+        .then(function (instance) {
+          adoptionInstance = instance;
+          return adoptionInstance.returnPet(petId, { from: account });
+        })
+        .then(function (result) {
+          return App.markAdopted();
+        })
+        .catch(function (err) {
+          console.log(err.message);
         });
-      }).then(function (result) {
-        // Optionally, update UI or perform actions after donation
-        console.log("Donation successful:", result);
-      }).catch(function (err) {
-        console.log(err.message);
-      });
     });
   },
 
-  
-  // handleDonation: function (event) {
-  //   event.preventDefault();
-  //   console.log("Donate button clicked!");
-  // },
-  
+  handleDonation: function (event) {
+    event.preventDefault();
 
+    try {
+      const amount = web3.toWei(0.1, "ether"); // Change the amount to your desired value
+      var sendMeEtherInstance;
+
+      web3.eth.getAccounts(function (error, accounts) {
+        if (error) {
+          console.log(error);
+          return false;
+        }
+        var account = accounts[0];
+
+        App.contracts.SendMeEther.deployed().then(function (instance) {
+          sendMeEtherInstance = instance;
+
+          // Send Ether to the contract using the receiveEther function
+          return sendMeEtherInstance.receiveEther({ 
+            from: account,
+            value: amount
+          });
+        }).then(function (result) {
+          console.log("Donation successful:", result);
+          return true;
+        }).catch(function (err) {
+          console.log(err.message);
+          return false;
+        });
+      });
+    } catch (error){
+      console.error("Error in handleDonation:", error.message);
+      return false; // Return false on failure
+    }
+  },
 
   handleChatMessage: async function () {
     const chatMessages = $('#chatMessages');
