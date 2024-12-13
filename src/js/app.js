@@ -35,6 +35,7 @@ App = {
       const petsRow = $('#petsRow');
       const petTemplate = $('#petTemplate');
 
+
       data.forEach((pet, i) => {
         petTemplate.find('.panel-title').text(pet.name);
         petTemplate.find('img').attr('src', pet.picture);
@@ -44,6 +45,7 @@ App = {
         petTemplate.find('.btn-adopt').attr('data-id', pet.id);
         petTemplate.find(".btn-return").attr("data-id", pet.id);
         petTemplate.find('.btn-like').attr('data-id', pet.id);
+        petTemplate.find(".btn-history").attr("data-id", data[i].id);
         petsRow.append(petTemplate.html());
       });
     });
@@ -112,6 +114,8 @@ App = {
     $(document).on('click', '.btn-adopt', App.handleAdopt);
     $(document).on('click', '.btn-like', App.handleLike);
     $(document).on("click", ".btn-return", App.handleReturn);
+    $(document).on("click", ".btn-history", App.handleGetAdoptionHistory);
+    $(document).on("click", ".btn-close-history", App.handleHistoryPanelClose);
     $(document).on('keypress', '#chatInput', function (event) {
       if (event.which === 13) {
         App.handleChatMessage();
@@ -121,6 +125,92 @@ App = {
     $(document).on('click', '#askMessageBtn', App.handleAskChatMessage);
     $(document).on("click", ".btn-donate", App.handleDonation);
     $(document).on('submit', '#commentForm', App.handleComment);
+  },
+
+  handleGetAdoptionHistory: function (event) {
+    event.preventDefault();
+
+    var petId = parseInt($(event.target).data("id"));
+    var adoptionInstance;
+    web3.eth.getAccounts(function (error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.Adoption.deployed()
+        .then(function (instance) {
+          adoptionInstance = instance;
+
+          // Call getPetAdoptionHistory from the contract
+          return adoptionInstance.getPetAdoptionHistory(petId, {
+            from: account,
+          });
+        })
+        .then(function (result) {
+          //console.log("Adoption History for petId " + petId + ":", result);
+
+          var historyContent = $("#historyContent");
+          historyContent.empty(); // Clear previous content
+
+          // Loop through each entry in the history
+          for (var i = 0; i < result[0].length; i++) {
+            var user = result[0][i];
+            // According to the BigNumber repo, S stands for sign, E for exponent and C for coefficient (or significand)
+            var timestamp = new Date(result[1][i].c[0] * 1000).toLocaleString();
+            var action = result[2][i].c[0] === 0 ? "Adopted" : "Returned";
+            // Format the history entry string
+            // var entryString = "Action: " + action + ", Timestamp: " + timestamp + "\nUser: " +user;
+            var entryString = App.formatAdoptionHistoryEntry(action, timestamp, user);
+            historyContent.append(
+              $("<p>").html(entryString.replace(/\n/g, "<br>"))
+            );
+          }
+
+          // Show the modal
+          $("#adoptionHistoryModal").show();
+        })
+        .catch(function (err) {
+          console.log(err.message);
+        });
+    });
+  },
+
+  formatAdoptionHistoryEntry: function (action, timestamp, user, petName = "a pet") {
+    // const actionText = action === 0 ? "Adopted" : "Returned";
+    const actionText = action;
+    // const date = new Date(timestamp * 1000);
+    const date = timestamp;
+    const timeAgo = App.getTimeAgo(date);
+    const readableDate = date.toLocaleString();
+
+    return `${user} ${actionText.toLowerCase()} ${petName}\n` +
+           `Date: ${readableDate} (${timeAgo})`;
+  },
+
+  // Helper Function: Get time ago (e.g., "2 days ago")
+  getTimeAgo: function (date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    const secondsInMinute = 60;
+    const secondsInHour = 60 * secondsInMinute;
+    const secondsInDay = 24 * secondsInHour;
+
+    if (diffInSeconds < secondsInMinute) {
+        return `${diffInSeconds} seconds ago`;
+    } else if (diffInSeconds < secondsInHour) {
+        return `${Math.floor(diffInSeconds / secondsInMinute)} minutes ago`;
+    } else if (diffInSeconds < secondsInDay) {
+        return `${Math.floor(diffInSeconds / secondsInHour)} hours ago`;
+    } else {
+        return `${Math.floor(diffInSeconds / secondsInDay)} days ago`;
+    }
+  },
+
+  handleHistoryPanelClose: function (event) {
+    $("#adoptionHistoryModal").hide();
   },
 
   handleChatMessage: async function () {

@@ -27,7 +27,7 @@
       }
 
       .container-fluid {
-        height: 100vh;
+        height: 80vh;
       }
 
       #petsSection {
@@ -164,6 +164,20 @@
               <!-- Pets will load dynamically here -->
             </div>
           </div>
+          <div id="adoptionHistoryModal" class="modal" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Adoption History</h4>
+                </div>
+                <div class="modal-body" id="historyContent">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default btn-close-history" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Chat Categorization Section -->
           <div class="col-md-3 chat-area" id="chatArea">
@@ -220,6 +234,7 @@
               <strong>Location</strong>: <span class="pet-location"></span><br/><br/>
               <button class="btn btn-default btn-adopt" type="button" data-id="0">Adopt</button>
               <button class="btn btn-default btn-return" type="button" data-id="0" style="display: none;">Return</button>
+              <button class="btn btn-default btn-history" type="button" data-id="0">History</button>
               <button class="btn btn-primary btn-like" type="button" data-id="0"><span>Like</span></button>
             </div>
           </div>
