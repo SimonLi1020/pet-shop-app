@@ -10,6 +10,7 @@ This project is an expansion of the popular DApp Pet Shop, adding new features t
 5. Filter the pets by breed, age, location through our chat bot.
 6. Ask any questions to our fine-tuned chat-bot.
 7. A navigation area helping users to redirect through each section.
+8. Allow users to track the history of a pet.
 
 
 ## Dependencies
