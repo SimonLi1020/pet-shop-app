@@ -272,7 +272,6 @@ App = {
       });
   },
 
-
   handleAdopt: function (event) {
     event.preventDefault();
     const petId = parseInt($(event.target).data('id'));
