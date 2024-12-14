@@ -186,7 +186,7 @@ App = {
     const readableDate = date.toLocaleString();
 
     return `${user} ${actionText.toLowerCase()} ${petName}\n` +
-           `Date: ${readableDate} (${timeAgo})`;
+           `Date: ${readableDate} on (${timeAgo})`;
   },
 
   // Helper Function: Get time ago (e.g., "2 days ago")
@@ -510,36 +510,77 @@ App = {
   },
 
   callLLM: async function (message) {
-    const apiKey = ''; // Replace this with your OpenAI API key
+    const apiKey = ''; // Replace with your OpenAI API key
     const apiUrl = 'https://api.openai.com/v1/chat/completions';
+    
+    // Define your custom prompt
+    const customPrompt = `
+You are a helpful assistant for Pete's Pet Shop, a webpage dedicated to encouraging dog adoption.
+
+Your role is to:
+1. Answer only questions related to the content of this webpage or topics about dogs and dog adoption.
+2. If the user's question is out of line or unrelated, respond with:
+   "Is there anything else I can help you with? If you're interested in dog adoption, I can provide you with information about the wonderful dogs available for adoption on our webpage!"
+3. If the user's question is related to gory, violent, or negative topics, try to steer them in a positive direction. Respond with warmth and comfort, and encourage them with kindness.
+4. If the user shows an interest in dogs, gently direct them to donate to the site or adopt dogs using a kind and encouraging tone.
+
+When answering questions, always:
+- Relate your responses to the content of the webpage.
+- Provide positive, uplifting, and encouraging information to inspire users to adopt a dog or contribute to the cause.
+
+Here is the content of the webpage:
+Pete's Pet Shop is a webpage for the adoption of dogs. There are 16 dogs available for adoption, and their details are as follows:
+1. Frieda: Scottish Terrier, 3 years old, Lisco, Alabama
+2. Gina: Scottish Terrier, 3 years old, Ooleville, West Virginia
+3. Collins: French Bulldog, 2 years old, Freeburn, Idaho
+4. Melissa: Boxer, 2 years old, Camas, Pennsylvania
+5. Jeanine: French Bulldog, 2 years old, Gerber, South Dakota
+6. Elvia: French Bulldog, 3 years old, Innsbrook, Illinois
+7. Latisha: Golden Retriever, 3 years old, Soudan, Louisiana
+8. Coleman: Golden Retriever, 3 years old, Jacksonwald, Palau
+9. Nichole: French Bulldog, 2 years old, Honolulu, Hawaii
+10. Fran: Boxer, 3 years old, Matheny, Utah
+11. Leonor: Boxer, 2 years old, Tyhee, Indiana
+12. Dean: Scottish Terrier, 3 years old, Windsor, Montana
+13. Stevenson: French Bulldog, 3 years old, Kingstowne, Nevada
+14. Kristina: Golden Retriever, 4 years old, Sultana, Massachusetts
+15. Ethel: Golden Retriever, 2 years old, Broadlands, Oregon
+16. Terry: Golden Retriever, 2 years old, Dawn, Wisconsin
+
+When answering, incorporate details from this list, and emphasize the joy, companionship, and love that adopting a dog can bring. If the user seems interested in supporting the cause, kindly suggest donating to help the wonderful dogs on this site.
+`;
+
 
     const requestBody = {
-      model: 'gpt-3.5-turbo', 
-      messages: [{ role: 'user', content: message }],
-      max_tokens: 150,
+        model: 'gpt-3.5-turbo',
+        messages: [
+            { role: 'system', content: customPrompt }, // System-level instruction
+            { role: 'user', content: message }         // User's input
+        ],
+        max_tokens: 150,
     };
 
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(requestBody),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Response error:', errorText);
-        throw new Error('Failed to fetch response from LLM');
-      }
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText);
+            throw new Error('Failed to fetch response from LLM');
+        }
 
-      const data = await response.json();
-      return data.choices[0].message.content;
+        const data = await response.json();
+        return data.choices[0].message.content;
     } catch (error) {
-      console.error('Error in callLLM:', error.message);
-      throw error;
+        console.error('Error in callLLM:', error.message);
+        throw error;
     }
   },
 };
